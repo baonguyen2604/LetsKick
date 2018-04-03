@@ -115,11 +115,49 @@ function teamOptionFormat(payloadCharacteristic, value, key) {
     return finalArr;
 }
 
+function urlButtonFormat(urlList, titleList) {
+    let finalArr = []
+    if ((Array.isArray(titleList) == true) && (urlList.length == titleList.length)) {
+        for (var element = 0; element < urlList.length; element++) {
+            var map = {};
+            map['type'] = 'web_url';
+            map['url'] = urlList[element];
+            map['title'] = titleList[element]; 
+            finalArr.push(map);
+        }
+        return finalArr;
+    }
+    else {
+        for (var url in urlList) {
+            var map = {};
+            map['type'] = 'web_url';
+            map['url'] = urlList[url];
+            map[title] = titleList;
+            finalArr.push(map);
+        }
+        return finalArr;
+    }
+}
+
+function postbackButtonFormat(characteristic, value, key) {
+    let finalArr = [];
+    for (var i = 0; i < value.length; i++) {
+        var map = {};
+        map['type'] = 'postback',
+        map['title'] = value[i],
+        map['payload'] = characteristic + '_' + value[i] + '_' + key;
+        finalArr.push(map);
+    }
+    return finalArr;
+}
+
+
 module.exports = {
     checkDuplicate,
     completeName,
     timeFormat,
     teamFormat,
     quickReplyFormat,
-    teamOptionFormat
+    teamOptionFormat,
+    postbackButtonFormat
 }

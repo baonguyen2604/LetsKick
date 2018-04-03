@@ -8,3 +8,6 @@ if ('5412' in dict) {
 delete dict['1234'];
 delete dict['This is not even in the dict'];
 console.log(dict);
+dict = 2;
+
+console.log(Array.isArray(dict));

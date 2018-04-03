@@ -24,14 +24,15 @@ router.post('/', (req, res) => {
       // Handle quick reply buttons
       if (webhook_event.message.quick_reply) {
         receive.handleQuickReply(sender_psid, webhook_event.message);
+      }
+
+      // Handle attachment
+      else if (webhook_event.message.attachment) {
+        receive.handleAttachment(sender_psid, webhook_event.message);
 
       // Handle Direct Message
       } else if (webhook_event.message) {
         receive.handleMessage(sender_psid, webhook_event.message);
-
-      // Handle Postback
-      } else if (webhook_event.postback) {
-        receive.handlePostback(sender_psid, webhook_event.postback);
       }
     });
 

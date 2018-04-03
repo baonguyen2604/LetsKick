@@ -12,7 +12,8 @@ app.get('/', (req, res) => {
 })
 
 // Sets server port and logs message on success
-app.listen(process.env.PORT || 1337, () => {
+// process.env.PORT || 
+app.listen(1337, () => {
 
   console.log('webhook is listening on port ', process.env.PORT || 1337);
 });

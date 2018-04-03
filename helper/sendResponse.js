@@ -91,39 +91,45 @@ function teamNewsURL(sender_psid, key, url, imageUrl, newsTitle, newsSubtitle) {
                         "title": newsTitle,
                         "subtitle": newsSubtitle,
                         "image_url": imageUrl,
-                        "buttons": [
-                        {
-                            "type": 'web_url',
-                            "url": url,
-                            "title": 'View More'
-                        }, 
-                        {
-                            "type": 'element_share',
-                            "share_contents": 
+                        "buttons":
+                        [
                             {
-                                "attachment": 
+                                "type": 'web_url',
+                                "url": url,
+                                "title": 'View More'
+                            }, 
+                            {
+                                "type": 'element_share',
+                                "share_contents": 
                                 {
-                                    "type": "template",
-                                    "payload": 
+                                    "attachment": 
                                     {
-                                        "template_type": "generic",
-                                        "image_aspect_ratio": 'square',
-                                        "elements": [
+                                        "type": "template",
+                                        "payload": 
                                         {
-                                            "title": newsTitle,
-                                            "subtitle": newsSubtitle,
-                                            "image_url": imageUrl,
-                                            "buttons": [
-                                            {
-                                                "type": 'web_url',
-                                                "url": url,
-                                                "title": 'View More'
-                                            }]
-                                        }]
+                                            "template_type": "generic",
+                                            "image_aspect_ratio": 'square',
+                                            "elements": 
+                                            [
+                                                {
+                                                    "title": newsTitle,
+                                                    "subtitle": newsSubtitle,
+                                                    "image_url": imageUrl,
+                                                    "buttons": 
+                                                    [
+                                                        {
+                                                            "type": 'web_url',
+                                                            "url": url,
+                                                            "title": 'View More'
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
                                     }
                                 }
                             }
-                        }]
+                        ]
                     }]
                 }
             }
@@ -184,10 +190,47 @@ function imageReply(sender_psid, title, subtitle, imageURL, infoURL) {
     });
 }
 
+function imagePostbackReply(sender_psid, title, characteristic, buttonTitle, imageURL) {
+    let button = postbackButtonFormat(characteristic, buttonTitle, title);
+    let request_body = {
+        "recipient": {
+            "id": sender_psid
+        },
+        "message": {
+            "attachment": {
+                "type": 'template',
+                "payload": {
+                    "template_type": 'generic',
+                    "image_aspect_ratio": 'square',
+                    "elements":
+                    [
+                        {
+                            "title": title,
+                            "image_url": imageURL,
+                            "buttons": button;
+                        }
+                    ]
+                }
+            }
+        }
+    }
+    request({
+        "uri": "https://graph.facebook.com/v2.6/me/messages",
+        "qs": { "access_token": process.env.PAGE_ACCESS_TOKEN},
+        "method": "POST",
+        "json": request_body
+    }, (err, res, body) => {
+        if (err) {
+            console.error("Unable to send message:" + err);
+        }
+    });
+}
+
 module.exports = {
     directMessage,
     quickReply,
     teamOptionChoose,
     teamNewsURL,
-    imageReply
+    imageReply,
+    imagePostbackReply
 };

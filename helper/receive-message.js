@@ -4,7 +4,7 @@ const info = require('./informationLookup.js');
 const handleCases = require('./handleCases.js');
 const sendResponse = require('./sendResponse.js');
 const dataFormat = require('./dataFormat.js');
-
+const data = require('../data/get_data.js');
 let handleChoice = {};
 
 // Handle direct Message
@@ -25,6 +25,7 @@ function handleMessage(sender_psid, received_message) {
 
     // Look for the Team
     else if (handleChoice[sender_psid] == 'TEAM') {
+        delete handleChoice[sender_psid];
         key = dataFormat.checkDuplicate(key);
         if (typeof(key) == 'object') {
             let newKey = dataFormat.completeName(key);
@@ -33,8 +34,9 @@ function handleMessage(sender_psid, received_message) {
             }
             sendResponse.quickReply(sender_psid, response, 'TEAMLIST', key);
         } else {
-            console.log(handleChoice);
-            handleCases.teamOptions(sender_psid, key);
+            data.get_team_name(key, (err, reply) => {
+                handleCases.teamOptions(sender_psid, reply[0], reply[1]);
+            })
         }
     }
 
@@ -94,29 +96,33 @@ function handleQuickReply(sender_psid, received_message) {
     }
 
     // Handle the Next Match option payload
-    if (key.includes('OPTION_')) {
+    // if (key.includes('OPTION_')) {
 
-        // Get the player name from Payload
-        var team = key.substring(18, key.length);
-        var status = key.substring(7, 18);
+    //     // Get the player name from Payload
+    //     var team = key.substring(18, key.length);
+    //     var status = key.substring(7, 18);
 
-        // In case user want the Next Match Schedule
-        if (key.includes('Next Match_')) {
-            delete handleChoice[sender_psid];
-            info.matchLookup(sender_psid, team, status);
+    //     // In case user want the Next Match Schedule
+    //     if (key.includes('Next Match_')) {
+    //         info.matchLookup(sender_psid, team, status);
+    //     }
+
+    //     // In case user want to see the lastest Team News
+    //     else if (key.includes('Team News _')) {
+    //         info.matchLookup(sender_psid, team, status);
+    //     }
+
+    //     // In case user want to see the Next Match Squad
+    //     else if (key.includes('Team Squad_')) {
+    //         info.matchLookup(sender_psid, team, status);
+    //     }
+    // }
+
+    if (key.includes('TEAMOPTIONS')) {
+        if (key.toUpperCase().includes('NEXT')) {
+            info.matchLookup(sender_psid, key.slice(key.lastIndexOf('_') + 1), key);
         }
 
-        // In case user want to see the lastest Team News
-        else if (key.includes('Team News _')) {
-            delete handleChoice[sender_psid];
-            info.matchLookup(sender_psid, team, status);
-        }
-
-        // In case user want to see the Next Match Squad
-        else if (key.includes('Team Squad_')) {
-            delete handleChoice[sender_psid];
-            info.matchLookup(sender_psid, team, status);
-        }
     }
 
     // Continues the bot by asking the initial question: Team or Player?
@@ -131,6 +137,10 @@ function handleQuickReply(sender_psid, received_message) {
             sendResponse.directMessage(sender_psid, response);
         }
     }
+}
+
+function handleAttachment(sender_psid, received_message) {
+    let key = received_message.attachment;
 }
 
 module.exports = {
